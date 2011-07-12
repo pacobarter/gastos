@@ -74,14 +74,24 @@ class Fijo:
         cur=db_connection.cursor()
         cur.execute(sql)
 
-        ret=[]
-        for r in cur:
-            c=Concept.fromID(db_connection, r[Fijo.idx_idConcept])
-            f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],c,r[Fijo.idx_value],r[Fijo.idx_date])            
-            ret.append(f)
-        
-        cur.close()
-        return ret        
+        try:
+            ret=[]
+            for r in cur:
+                c=Concept.fromID(db_connection, r[Fijo.idx_idConcept])
+                
+                if not c:
+                    raise Exception()
+                    
+                f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],c,r[Fijo.idx_value],r[Fijo.idx_date])            
+                ret.append(f)
+            
+            return ret        
+
+        except:
+            return []
+            
+        finally:
+            cur.close()
 
     @classmethod
     def __listFromSQLConcept(cls, sql, concept):
@@ -187,64 +197,70 @@ class Concept:
     idx_Description = 2
 
     @classmethod
+    def __oneFromSQL(cls, db_connection, sql):
+        cur=db_connection.cursor()
+        cur.execute(sql)
+
+        try:
+            r=cur.fetchone()
+            return Concept(r[Concept.idx_ID],r[Concept.idx_Name],r[Concept.idx_Description])
+        
+        except Exception:
+            return None
+            
+        finally:
+            cur.close()
+
+    @classmethod
+    def __listFromSQL(cls, db_connection, sql):
+        cur=db_connection.cursor()
+        cur.execute(sql)
+
+        try:
+            ret=[]
+            for r in cur:
+                ret.append(Concept(r[Concept.idx_ID],r[Concept.idx_Name],r[Concept.idx_Description]))
+    
+            return ret
+
+        except:
+            return []
+
+        finally:
+            cur.close()
+
+    @classmethod
     def listAll(cls, db_connection):
         sql='SELECT * FROM %s' % (Concept.tableName,)
 
-        cur=db_connection.cursor()
-        cur.execute(sql)
-        
-        ret=[]
-        for r in cur:
-            ret.append(Concept(r[Concept.idx_ID],r[Concept.idx_Name],r[Concept.idx_Description]))
-        
-        cur.close()
-        
-        return ret
+        return Concept.__listFromSQL(db_connection,sql)
 
     @classmethod
     def findID(cls, db_connection, name):
         sql='SELECT ID FROM %s WHERE name="%s"' % (Concept.tableName, name)
 
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
         try:
-            return cur.fetchone()[Concept.idx_ID]
+            return Concept.__oneFromSQL(db_connection,sql).id
         except:
             return -1
 
     @classmethod
     def fromID(cls, db_connection, id):
         sql='SELECT * FROM %s WHERE ID=%d' % (Concept.tableName, id)
-
-        cur=db_connection.cursor()
-        cur.execute(sql)
-        row=cur.fetchone()
         
-        return Concept(id,row[Concept.idx_Name],row[Concept.idx_Description])
+        return Concept.__oneFromSQL(db_connection,sql)
 
     @classmethod
     def fromName(cls, db_connection, name):
         sql='SELECT * FROM %s WHERE name="%s"' % (Concept.tableName, name)
 
-        cur=db_connection.cursor()
-        cur.execute(sql)
-        row=cur.fetchone()
-        
-        return Concept(row[Concept.idx_ID],name,row[Concept.idx_Description])
+        return Concept.__oneFromSQL(db_connection,sql)
 
     @classmethod
     def likeName(cls, db_connection, name):
         sql='SELECT * FROM %s WHERE name LIKE "%%%s%%"' % (Concept.tableName, name)
 
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
-        lst=[]
-        for r in cur:
-            lst.append(Concept(r[Concept.idx_ID],r[Concept.idx_Name],r[Concept.idx_Description]))            
-        
-        return lst
+        return Concept.__listFromSQL(db_connection,sql)
 
     def __init__(self, id, name, description):
         self.id=id
@@ -265,54 +281,73 @@ class Group:
     idx_Description = 2
 
     @classmethod
-    def listAll(cls, db_connection):
-        sql='SELECT * FROM %s' % (Group.tableName,)
-
+    def __oneFromSQL(cls, db_connection, sql):
         cur=db_connection.cursor()
         cur.execute(sql)
+
+        try:
+            r=cur.fetchone()
+            return Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description])
         
-        ret=[]
-        for r in cur:
-            ret.append(Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description]))
+        except Exception as e:
+            return None
+            
+        finally:
+            cur.close()
+
+    @classmethod
+    def __listFromSQL(cls, db_connection, sql):
+        cur=db_connection.cursor()
+        cur.execute(sql)
+
+        try:
+            ret=[]
+            for r in cur:
+                ret.append(Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description]))
+    
+            return ret
+
+        except:
+            return []
+
+        finally:
+            cur.close()
+
+    
+    @classmethod
+    def listAll(cls, db_connection):
+        sql='SELECT * FROM %s' % (Group.tableName,)
         
-        cur.close()
-        
-        return ret
+        return Group.__listFromSQL(db_connection,sql)
 
     @classmethod
     def findID(cls, db_connection, name):
         sql='SELECT ID FROM %s WHERE name="%s"' % (Group.tableName, name)
 
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
-        try:
-            return cur.fetchone()[Group.idx_ID]
-        except:
+        g=Group.__oneFromSQL(db_connection,sql)
+        
+        if g:
+            return g.id
+        else:
             return -1
             
+    @classmethod
+    def fromID(cls, db_connection, id):
+        sql='SELECT * FROM %s WHERE ID=%d' % (Group.tableName, id)
+
+        return Group.__oneFromSQL(db_connection,sql)
+
     @classmethod
     def fromName(cls, db_connection, name):
         sql='SELECT * FROM %s WHERE name="%s"' % (Group.tableName, name)
 
-        cur=db_connection.cursor()
-        cur.execute(sql)
-        row=cur.fetchone()
-        
-        return Group(row[Group.idx_ID],name,row[Group.idx_Description])
+        return Group.__oneFromSQL(db_connection,sql)
 
     @classmethod
     def likeName(cls, db_connection, name):
         sql='SELECT * FROM %s WHERE name LIKE "%%%s%%"' % (Group.tableName, name)
-
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
-        lst=[]
-        for r in cur:
-            lst.append(Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description]))            
         
-        return lst
+        return Group.__listFromSQL(db_connection,sql)
 
     def __init__(self, id, name, description):
         self.id=id
