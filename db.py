@@ -50,6 +50,7 @@
 # ============================================================================= 
 
 import sqlite3
+import datetime as dt
 
 dbName='gastos.db'
 
@@ -69,37 +70,83 @@ class Fijo:
     idx_date        = 4
 
     @classmethod
-    def listAll(cls, db_connection):
-        sql='SELECT * FROM %s' % (Fijo.tableName,)
-
+    def __listFromSQL(cls, db_connection, sql):
         cur=db_connection.cursor()
         cur.execute(sql)
-        
+
         ret=[]
         for r in cur:
             c=Concept.fromID(db_connection, r[Fijo.idx_idConcept])
-            
-            f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],c,r[Fijo.idx_value],r[Fijo.idx_date])
-            
+            f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],c,r[Fijo.idx_value],r[Fijo.idx_date])            
             ret.append(f)
         
         cur.close()
+        return ret        
+
+    @classmethod
+    def __listFromSQLConcept(cls, sql, concept):
+        cur=db_connection.cursor()
+        cur.execute(sql)
+
+        ret=[]
+        for r in cur:
+            f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],concept,r[Fijo.idx_value],r[Fijo.idx_date])            
+            ret.append(f)
         
-        return ret
+        cur.close()
+        return ret        
+
+    @classmethod
+    def listAll(cls, db_connection):
+        sql='SELECT * FROM %s' % (Fijo.tableName,)
+
+        return Fijo.__listFromSQL(db_connection,sql)
         
     @classmethod
     def findConcept(cls, db_connection, concept):
-        sql='SELECT * FROM %s WHERE id_concept=' % (Fijo.tableName,concept.id)
-        
-        
+        sql='SELECT * FROM %s WHERE id_concept=%d' % (Fijo.tableName,concept.id)
+
+        return Fijo.__listFromSQLConcept(sql,concept)
+      
 
     @classmethod
-    def findDate(cls, db_connection, date):
-        pass
+    def findDate(cls, db_connection, date): 
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE date="%s"' % (Fijo.tableName,date)
+
+        return Fijo.__listFromSQL(db_connection,sql)
 
     @classmethod
-    def findMensual(cls, db_connection, date, is_mensual):
-        pass
+    def findDateRange(cls, db_connection, date_start, date_end): 
+        # 'date's como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE date>="%s" AND date<="%s"' % (Fijo.tableName,date_start,date_end)
+
+        return Fijo.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateSup(cls, db_connection, date_max):
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE date<="%s"' % (Fijo.tableName,date_max)
+
+        return Fijo.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateInf(cls, db_connection, date_min):
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE date>="%s"' % (Fijo.tableName,date_max)
+
+        return Fijo.__listFromSQL(db_connection,sql)
+
+
+    @classmethod
+    def findMensual(cls, db_connection, is_mensual):
+        if is_mensual:
+            sql='SELECT * FROM %s WHERE mensual="true"' % (Fijo.tableName,)
+        else:
+            sql='SELECT * FROM %s WHERE mensual="false"' % (Fijo.tableName,)
+            
+        return Fijo.__listFromSQL(db_connection,sql)
+        
         
     def __init__(self, id, mensual, concept, value, date):
         self.id=id
@@ -110,9 +157,9 @@ class Fijo:
     
     def __str__(self):
         if self.mensual==True:
-            return '[%d] %s (%s; mensual) %.2f Eur' % (self.id, self.concept.name, self.date, self.value)
+            return '[%d] %-25s (%s; mensual) %.2f Eur' % (self.id, self.concept.name, self.date, self.value)
         else:
-            return '[%d] %s (%s;   anual) %.2f Eur' % (self.id, self.concept.name, self.date, self.value)
+            return '[%d] %-25s (%s;   anual) %.2f Eur' % (self.id, self.concept.name, self.date, self.value)
 
 #
 #-- Clase que encapsula un elemento de la tabla 'concepts'
@@ -229,6 +276,29 @@ class Group:
         except:
             return -1
             
+    @classmethod
+    def fromName(cls, db_connection, name):
+        sql='SELECT * FROM %s WHERE name="%s"' % (Group.tableName, name)
+
+        cur=db_connection.cursor()
+        cur.execute(sql)
+        row=cur.fetchone()
+        
+        return Group(row[Group.idx_ID],name,row[Group.idx_Description])
+
+    @classmethod
+    def likeName(cls, db_connection, name):
+        sql='SELECT * FROM %s WHERE name LIKE "%%%s%%"' % (Group.tableName, name)
+
+        cur=db_connection.cursor()
+        cur.execute(sql)
+
+        lst=[]
+        for r in cur:
+            lst.append(Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description]))            
+        
+        return lst
+
     def __init__(self, id, name, description):
         self.id=id
         self.name=name
@@ -241,6 +311,8 @@ class Group:
 # =============================================================================
 def main():
     conn=dbOpen()
+
+# <-- Tests for 'Group'
     
 #     lstG=Group.listAll(conn)
 #     for g in lstG:
@@ -250,19 +322,54 @@ def main():
     
 #    print '"OCIO" ID =>',Group.findID(conn,'OCIO')
     
+# -->
+
+# <-- Tests for 'Concept'
+
 #     lstC=Concept.listAll(conn)
 #     for c in lstC:
 #         print c
     
-#    lstF=Fijo.listAll(conn)
-#    for f in lstF:
-#        print f
+#     lstC=Concept.likeName(conn,'coche')
+#     for c in lstC:
+#         print c
+    
+#     print Concept.fromName(conn,'Seguro coche Hyundai')
 
-#    print Concept.fromName(conn,'Seguro coche Hyundai')
+# -->
 
-    lstC=Concept.likeName(conn,'coche')
-    for c in lstC:
-        print c
+# <-- Tests for 'Fijo'
+
+#     lstF=Fijo.listAll(conn)
+#     for f in lstF:
+#         print f
+
+#     lstF=Fijo.findMensual(conn,False)
+#     for f in lstF:
+#         print f
+
+#     c=Concept.fromName(conn,'Seguro coche Hyundai')
+#     if not c:
+#         print 'Concept not found!'
+#     else:
+#         lstF=Fijo.findConcept(conn,c)
+#         for f in lstF:
+#             print f
+
+#     lstF=Fijo.findDate(conn,'2011-05-01')
+#     for f in lstF:
+#         print f
+ 
+#     lstF=Fijo.findDateRange(conn,'2011-01-01','2011-09-01')
+#     for f in lstF:
+#         print f
+
+    lstF=Fijo.findDateSup(conn,'2011-06-01')
+    for f in lstF:
+        print f
+
+# -->
+    
     
 ###############################################################################    
 if __name__=='__main__':
