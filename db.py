@@ -110,40 +110,55 @@ class Fijo:
       
 
     @classmethod
-    def findDate(cls, db_connection, date): 
+    def findDate(cls, db_connection, date, is_mensual): 
         # 'date' como string, en la forma 'YYYY-MM-DD'
-        sql='SELECT * FROM %s WHERE date="%s"' % (Fijo.tableName,date)
-
-        return Fijo.__listFromSQL(db_connection,sql)
-
-    @classmethod
-    def findDateRange(cls, db_connection, date_start, date_end): 
-        # 'date's como string, en la forma 'YYYY-MM-DD'
-        sql='SELECT * FROM %s WHERE date>="%s" AND date<="%s"' % (Fijo.tableName,date_start,date_end)
-
-        return Fijo.__listFromSQL(db_connection,sql)
-
-    @classmethod
-    def findDateSup(cls, db_connection, date_max):
-        # 'date' como string, en la forma 'YYYY-MM-DD'
-        sql='SELECT * FROM %s WHERE date<="%s"' % (Fijo.tableName,date_max)
-
-        return Fijo.__listFromSQL(db_connection,sql)
-
-    @classmethod
-    def findDateInf(cls, db_connection, date_min):
-        # 'date' como string, en la forma 'YYYY-MM-DD'
-        sql='SELECT * FROM %s WHERE date>="%s"' % (Fijo.tableName,date_max)
-
-        return Fijo.__listFromSQL(db_connection,sql)
-
-
-    @classmethod
-    def findMensual(cls, db_connection, is_mensual):
-        if is_mensual:
-            sql='SELECT * FROM %s WHERE mensual="true"' % (Fijo.tableName,)
+        if is_mensual==True:
+            sql='SELECT * FROM %s WHERE mensual=1 AND date="%s"' % (Fijo.tableName,date)
         else:
-            sql='SELECT * FROM %s WHERE mensual="false"' % (Fijo.tableName,)
+            sql='SELECT * FROM %s WHERE mensual=0 AND date="%s"' % (Fijo.tableName,date)
+
+        return Fijo.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateRange(cls, db_connection, date_start, date_end, is_mensual): 
+        # 'date's como string, en la forma 'YYYY-MM-DD'
+        if is_mensual==True:
+            sql='SELECT * FROM %s WHERE mensual=1 AND date>="%s" AND date<="%s"' % (Fijo.tableName,date_start,date_end)
+        else:
+            sql='SELECT * FROM %s WHERE mensual=0 AND date>="%s" AND date<="%s"' % (Fijo.tableName,date_start,date_end)
+
+        return Fijo.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateSup(cls, db_connection, date_max, is_mensual):
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        if is_mensual:
+            sql='SELECT * FROM %s WHERE mensual=1 AND date<="%s"' % (Fijo.tableName,date_max)
+        else:
+            sql='SELECT * FROM %s WHERE mensual=0 AND date<="%s"' % (Fijo.tableName,date_max)
+
+        return Fijo.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateInf(cls, db_connection, date_min, is_mensual):
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        if is_mensual==True:
+            sql='SELECT * FROM %s mensual=1 AND WHERE date>="%s"' % (Fijo.tableName,date_max)
+        else:
+            sql='SELECT * FROM %s mensual=0 AND WHERE date>="%s"' % (Fijo.tableName,date_max)
+        
+        return Fijo.__listFromSQL(db_connection,sql)
+
+
+    @classmethod
+    def findAllMensual(cls, db_connection):
+        sql='SELECT * FROM %s WHERE mensual=1' % (Fijo.tableName,)
+            
+        return Fijo.__listFromSQL(db_connection,sql)
+        
+    @classmethod
+    def findAllAnual(cls, db_connection):
+        sql='SELECT * FROM %s WHERE mensual=0' % (Fijo.tableName,)
             
         return Fijo.__listFromSQL(db_connection,sql)
         
@@ -344,9 +359,17 @@ def main():
 #     for f in lstF:
 #         print f
 
-#     lstF=Fijo.findMensual(conn,False)
+#     print 'all mensual:'
+#     lstF=Fijo.findAllMensual(conn)
 #     for f in lstF:
 #         print f
+#     print '--'
+
+#     print 'all anual:'
+#     lstF=Fijo.findAllAnual(conn)
+#     for f in lstF:
+#         print f
+#     print '--'
 
 #     c=Concept.fromName(conn,'Seguro coche Hyundai')
 #     if not c:
@@ -356,17 +379,25 @@ def main():
 #         for f in lstF:
 #             print f
 
-#     lstF=Fijo.findDate(conn,'2011-05-01')
+#     lstF=Fijo.findDate(conn,'2011-05-01', False)
 #     for f in lstF:
 #         print f
  
-#     lstF=Fijo.findDateRange(conn,'2011-01-01','2011-09-01')
+#     lstF=Fijo.findDateRange(conn,'2011-01-01','2011-09-01', False)
 #     for f in lstF:
 #         print f
 
-    lstF=Fijo.findDateSup(conn,'2011-06-01')
+    lstF=Fijo.findDateRange(conn,'2011-01-01','2011-09-01', True)
     for f in lstF:
         print f
+
+#     lstF=Fijo.findDateSup(conn,'2011-06-01', False)
+#     for f in lstF:
+#         print f
+
+#     lstF=Fijo.findDateSup(conn,'2011-06-01', True)
+#     for f in lstF:
+#         print f
 
 # -->
     
