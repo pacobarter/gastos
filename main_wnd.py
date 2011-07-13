@@ -28,31 +28,42 @@ class MainWnd:
         self.db_connection=None
 
 
-    def log(self, txt):
+    def addLog(self, txt):
         self.textbufferOut.insert_at_cursor(txt + '\n')
 
+    def setLog(self, txt):
+        self.textbufferOut.set_text(txt)
+
     def clearLog(self):
-        self.textbufferOut.set_text('')
+        self.setLog('')
 
     def on_btnOpenDB_clicked(self, widget):
         self.clearLog()
         self.db_connection=db.dbOpen()
-        self.log('DB opened')
+        self.addLog('DB opened')
 
     def on_btnListAllConcepts_clicked(self, widget):
         self.clearLog()
         
         lstC=db.Concept.listAll(self.db_connection)
-        for c in lstC:
-            self.log(str(c))
+        if len(lstC)>0:
+            for c in lstC:
+                self.addLog(str(c))
+        else:
+            self.setLog('<empty>')
+
 
     def on_btnListAllGroups_clicked(self, widget):
         self.clearLog()
         
         lstG=db.Group.listAll(self.db_connection)
-        for g in lstG:
-            self.log(str(g))
-
+        if len(lstG)>0:
+            for g in lstG:
+                self.addLog(str(g))
+        else:
+            self.setLog('<empty>')
+        
+        
     def on_wndMain_destroy(self,widget):
         sys.exit(0)
 

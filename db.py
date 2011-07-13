@@ -71,10 +71,12 @@ class Fijo:
 
     @classmethod
     def __listFromSQL(cls, db_connection, sql):
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
+        cur=None
+        
         try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+
             ret=[]
             for r in cur:
                 c=Concept.fromID(db_connection, r[Fijo.idx_idConcept])
@@ -91,20 +93,31 @@ class Fijo:
             return []
             
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     @classmethod
     def __listFromSQLConcept(cls, sql, concept):
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
-        ret=[]
-        for r in cur:
-            f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],concept,r[Fijo.idx_value],r[Fijo.idx_date])            
-            ret.append(f)
+        cur=None
         
-        cur.close()
-        return ret        
+        try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+    
+            ret=[]
+            for r in cur:
+                f=Fijo(r[Fijo.idx_ID],r[Fijo.idx_mensual],concept,r[Fijo.idx_value],r[Fijo.idx_date])            
+                ret.append(f)
+            
+            return ret        
+
+        except:
+            return []
+            
+        finally:
+            if cur:
+                cur.close()
+
 
     @classmethod
     def listAll(cls, db_connection):
@@ -198,10 +211,12 @@ class Concept:
 
     @classmethod
     def __oneFromSQL(cls, db_connection, sql):
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
+        cur=None
+        
         try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+
             r=cur.fetchone()
             return Concept(r[Concept.idx_ID],r[Concept.idx_Name],r[Concept.idx_Description])
         
@@ -209,14 +224,17 @@ class Concept:
             return None
             
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     @classmethod
     def __listFromSQL(cls, db_connection, sql):
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
+        cur=None
+        
         try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+
             ret=[]
             for r in cur:
                 ret.append(Concept(r[Concept.idx_ID],r[Concept.idx_Name],r[Concept.idx_Description]))
@@ -227,7 +245,8 @@ class Concept:
             return []
 
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     @classmethod
     def listAll(cls, db_connection):
@@ -282,10 +301,12 @@ class Group:
 
     @classmethod
     def __oneFromSQL(cls, db_connection, sql):
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
+        cur=None
+        
         try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+
             r=cur.fetchone()
             return Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description])
         
@@ -293,14 +314,17 @@ class Group:
             return None
             
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     @classmethod
     def __listFromSQL(cls, db_connection, sql):
-        cur=db_connection.cursor()
-        cur.execute(sql)
-
+        cur=None
+        
         try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+
             ret=[]
             for r in cur:
                 ret.append(Group(r[Group.idx_ID],r[Group.idx_Name],r[Group.idx_Description]))
@@ -311,7 +335,8 @@ class Group:
             return []
 
         finally:
-            cur.close()
+            if cur:
+                cur.close()
 
     
     @classmethod
