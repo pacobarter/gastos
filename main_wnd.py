@@ -1,3 +1,6 @@
+# -- coding: utf-8 --
+
+import sys
 import gtk
 import db
 
@@ -50,7 +53,7 @@ class MainWnd:
         for g in lstG:
             self.log(str(g))
 
-    def on_window_destroy(self,widget):
+    def on_wndMain_destroy(self,widget):
         sys.exit(0)
 
 

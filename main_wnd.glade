@@ -1,25 +1,32 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
+  <object class="GtkTextBuffer" id="textbufferOut"/>
   <object class="GtkWindow" id="wndMain">
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Gastos Graphs</property>
     <property name="window_position">center</property>
     <property name="default_width">440</property>
     <property name="default_height">250</property>
+    <signal name="destroy" handler="on_wndMain_destroy" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkToolbar" id="tbar">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkToolButton" id="btnOpenDB">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">Open DB</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-open</property>
-                <signal name="clicked" handler="on_btnOpenDB_clicked"/>
+                <signal name="clicked" handler="on_btnOpenDB_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -29,6 +36,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="padding">3</property>
             <property name="position">0</property>
           </packing>
@@ -36,6 +44,7 @@
         <child>
           <object class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="layout_style">start</property>
             <child>
               <object class="GtkButton" id="btnListAllConcepts">
@@ -43,7 +52,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_btnListAllConcepts_clicked"/>
+                <property name="use_action_appearance">False</property>
+                <signal name="clicked" handler="on_btnListAllConcepts_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -57,7 +67,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="on_btnListAllGroups_clicked"/>
+                <property name="use_action_appearance">False</property>
+                <signal name="clicked" handler="on_btnListAllGroups_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -68,6 +79,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="padding">3</property>
             <property name="position">1</property>
           </packing>
@@ -88,6 +100,8 @@
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="padding">3</property>
             <property name="position">2</property>
           </packing>
@@ -95,5 +109,4 @@
       </object>
     </child>
   </object>
-  <object class="GtkTextBuffer" id="textbufferOut"/>
 </interface>
