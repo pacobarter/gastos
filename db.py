@@ -7,6 +7,15 @@
 #   Clase que encapsula el acceso a la BBDD                                                              
 #                                          
 #   Esquema de la BBDD:
+#
+#         CREATE TABLE ingresos ( 
+#             id      INTEGER  PRIMARY KEY AUTOINCREMENT
+#                              NOT NULL
+#                              UNIQUE,
+#             date    DATETIME NOT NULL,
+#             sueldo1 REAL     NOT NULL,
+#             sueldo2 REAL     NOT NULL 
+#         );
 #         
 #         CREATE TABLE concepts ( 
 #             id          INTEGER        PRIMARY KEY

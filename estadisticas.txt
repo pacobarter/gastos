@@ -1,0 +1,61 @@
+********************************************************************************
+    Estadisticas
+********************************************************************************
+
+En cualquier caso, sería interesante mostrar de alguna manera la cantidad de 
+datos que hay en la BBDD (primera fecha, ultima fecha, ...)
+
+Por tipo de gasto
+--------------------------------------------------------------------------------
+
+- Fijo (si es anual, para queries != año entero -> valor mostrado = value/12)
+    - in:[mes concreto] (*)
+    - in:[año concreto] (**)
+    - in:[rango de meses] (***)
+    - in:[rango de años] (***)
+
+    (*)   out:[totales y proporciones por id_concept]
+    (**)  out:[totales, proporciones y evolucion mensual clasificados por id_concept]
+    (***) out:[totales, proporciones y evolucion clasificados por id_concept]
+
+
+- Variable
+    - in:[dia concreto] (+)
+    - in:[mes concreto] (++)
+    - in:[año concreto] (+++)
+    - in:[rango de meses] (++++)
+    - in:[rango de años] (++++)
+
+    (+)    out:[ {totales y proporciones} clasificados por id_concept e id_group 
+               / desglose id_group -> id_concept]
+
+    (++)   out:[ {totales, proporciones y evolucion diaria} clasificados por id_concept e id_group 
+               / desglose id_group -> id_concept]
+
+    (+++)  out:[ {totales, proporciones y evolucion mensual} clasificados por id_concept e id_group 
+               / desglose id_group -> id_concept]
+
+    (++++) out:[ {totales, proporciones y evolucion} clasificados por id_concept e id_group 
+               / desglose id_group -> id_concept]
+
+
+Por fecha
+--------------------------------------------------------------------------------
+
+- Dia
+    in:[dia concreto]
+    out:[fijos de ese mes (o), variables (oo) de ese dia / totales y proporciones]
+
+- Mes 
+    in:[mes concreto]
+    out:[fijos (o) y variables (oo) de ese mes / totales, proporciones y evolucion diaria]
+
+- Año 
+    in:[año concreto]
+    out:[fijos (o) y variables (oo) de ese año / totales, proporciones y evolucion mensual]
+
+- Rango fechas 
+    out:[fijos (o) y variables (oo) de ese rango / totales, proporciones y evolucion mensual]
+
+    (o)  clasificados por id_concept
+    (oo) clasificados por id_concept e id_group / desglose id_group -> id_concept
