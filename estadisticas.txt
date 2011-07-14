@@ -59,3 +59,20 @@ Por fecha
 
     (o)  clasificados por id_concept
     (oo) clasificados por id_concept e id_group / desglose id_group -> id_concept
+
+
+********************************************************************************
+    Idea para el GUI
+********************************************************************************
+
+- tres vistas:
+    - año: seleccion para mostrar uno o varios años consecutivos, resumen anual; ingresos y gastos 
+        agrupados; totales, proporciones y evolución mensual
+    
+    - mensual: seleccion para mostrar uno o varios meses consecutivos, resumen mensual, con gastos 
+        fijos anuales/12; totales, proporciones y evolución diaria. Capacidad para descomponer 
+        gastos por grupos y/o conceptos
+
+    - diaria: seleccion para mostrar uno o varios dias consecutivos, resumen diario, desglose 
+        por grupo/concepto
+ 
