@@ -67,6 +67,86 @@ def dbOpen():
     return sqlite3.connect(dbName)
 
 #
+#-- Clase que encapsula un elemento de la tabla 'ingresos'
+#
+#-----------------------------------------------------------------------------------------------
+class Ingreso:
+    tableName       = 'ingresos'
+    idx_ID          = 0
+    idx_date        = 1
+    idx_sueldo1     = 2
+    idx_sueldo2     = 3
+
+    @classmethod
+    def __listFromSQL(cls, db_connection, sql):
+        cur=None
+
+        try:
+            cur=db_connection.cursor()
+            cur.execute(sql)
+
+            ret=[]
+            for r in cur:
+                i=Ingreso(r[Ingreso.idx_ID],r[Ingreso.idx_date],r[Ingreso.idx_sueldo1],r[Ingreso.idx_sueldo2])            
+                ret.append(i)
+            
+            return ret
+
+        except:
+            return []
+            
+        finally:
+            if cur:
+                cur.close()
+
+    @classmethod
+    def listAll(cls, db_connection):
+        sql='SELECT * FROM %s' % (Ingreso.tableName,)
+
+        return Ingreso.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDate(cls, db_connection, date): 
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE date="%s"' % (Ingreso.tableName,date)
+
+        return Ingreso.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateRange(cls, db_connection, date_start, date_end): 
+        # 'date's como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE date>="%s" AND date<="%s"' % (Ingreso.tableName,date_start,date_end)
+
+        return Ingreso.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateSup(cls, db_connection, date_max):
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s WHERE AND date<="%s"' % (Ingreso.tableName,date_max)
+
+        return Ingreso.__listFromSQL(db_connection,sql)
+
+    @classmethod
+    def findDateInf(cls, db_connection, date_min):
+        # 'date' como string, en la forma 'YYYY-MM-DD'
+        sql='SELECT * FROM %s AND WHERE date>="%s"' % (Ingreso.tableName,date_max)
+        
+        return Ingreso.__listFromSQL(db_connection,sql)
+
+
+    def __init__(self, id, date, sueldo1, sueldo2):
+        self.id=id
+        self.date=date
+        self.sueldo1=sueldo1
+        sefl.sueldo2.sueldo2
+
+    def total(self):
+        return self.sueldo1+self.sueldo2
+
+    def __str__(self):
+        return '[%d] (%s) %.2f Eur' % (self,id, self.date, self.total())
+
+#
 #-- Clase que encapsula un elemento de la tabla 'fijo'
 #
 #-----------------------------------------------------------------------------------------------
