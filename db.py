@@ -144,7 +144,7 @@ class Ingreso:
         return self.sueldo1+self.sueldo2
 
     def __str__(self):
-        return '[%d] (%s) %.2f Eur' % (self,id, self.date, self.total())
+        return '[%2d] (%s) %.2f Eur' % (self,id, self.date, self.total())
 
 #
 #-- Clase que encapsula un elemento de la tabla 'fijo'
@@ -376,7 +376,7 @@ class Concept:
         self.description=description
         
     def __str__(self):
-        return '[%d] %-25s, %s' % (self.id, self.name, self.description)
+        return '[%2d] %-25s, %s' % (self.id, self.name, self.description)
     
 #
 #-- Clase que encapsula un elemento de la tabla 'groups'
@@ -469,7 +469,7 @@ class Group:
         self.description=description
     
     def __str__(self):
-        return '[%d] %-15s, %s' % (self.id, self.name, self.description)
+        return '[%2d] %-15s, %s' % (self.id, self.name, self.description)
     
 
 # =============================================================================
