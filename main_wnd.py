@@ -27,6 +27,10 @@ class MainWnd:
         self.textOut            = self.builder.get_object('textOut')
         self.textbufferOut      = self.builder.get_object('textbufferOut')
         
+#        self.tvGrupo            = self.builder.get_object('treeviewGrupo')
+#        self.lststoreGrupo      = self.builder.get_object('lststoreGrupo')
+#        self.tvGrupo.set_model(self.lststoreGrupo)
+        
         self.window.show_all()
         self.builder.connect_signals(self)
 
@@ -34,6 +38,9 @@ class MainWnd:
 
         font=pango.FontDescription('monospace 8')
         self.textOut.modify_font(font)
+        
+#        self.lststoreGrupo.append((0,'cero','desc for cero'))
+#        self.lststoreGrupo.append((1,'uno','desc for uno'))
 
     # -----------------------------------------------------------------------
     #   UTILS
