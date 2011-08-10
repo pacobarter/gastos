@@ -13,8 +13,7 @@
 #                              NOT NULL
 #                              UNIQUE,
 #             date    DATETIME NOT NULL,
-#             sueldo1 REAL     NOT NULL,
-#             sueldo2 REAL     NOT NULL 
+#             ingreso REAL     NOT NULL
 #         );
 #         
 #         CREATE TABLE concepts ( 
@@ -74,8 +73,7 @@ class Ingreso:
     tableName       = 'ingresos'
     idx_ID          = 0
     idx_date        = 1
-    idx_sueldo1     = 2
-    idx_sueldo2     = 3
+    idx_ingreso     = 2
 
     @classmethod
     def __listFromSQL(cls, db_connection, sql):
@@ -87,7 +85,7 @@ class Ingreso:
 
             ret=[]
             for r in cur:
-                i=Ingreso(r[Ingreso.idx_ID],r[Ingreso.idx_date],r[Ingreso.idx_sueldo1],r[Ingreso.idx_sueldo2])            
+                i=Ingreso(r[Ingreso.idx_ID],r[Ingreso.idx_date],r[Ingreso.idx_ingreso])            
                 ret.append(i)
             
             return ret
@@ -129,22 +127,21 @@ class Ingreso:
     @classmethod
     def findDateInf(cls, db_connection, date_min):
         # 'date' como string, en la forma 'YYYY-MM-DD'
-        sql='SELECT * FROM %s AND WHERE date>="%s"' % (Ingreso.tableName,date_max)
+        sql='SELECT * FROM %s AND WHERE date>="%s"' % (Ingreso.tableName,date_min)
         
         return Ingreso.__listFromSQL(db_connection,sql)
 
 
-    def __init__(self, id, date, sueldo1, sueldo2):
+    def __init__(self, id, date, ingreso):
         self.id=id
         self.date=date
-        self.sueldo1=sueldo1
-        sefl.sueldo2.sueldo2
-
-    def total(self):
-        return self.sueldo1+self.sueldo2
+        self.ingreso=ingreso
 
     def __str__(self):
-        return '[%2d] (%s) %.2f Eur' % (self,id, self.date, self.total())
+        return '[%2d] (%s) %.2f Eur' % (self.id, self.date, self.ingreso)
+
+    def toList(self):
+        return (self.id, self.date, '%8.2f' % self.ingreso)
 
 #
 #-- Clase que encapsula un elemento de la tabla 'fijo'
@@ -186,7 +183,7 @@ class Fijo:
                 cur.close()
 
     @classmethod
-    def __listFromSQLConcept(cls, sql, concept):
+    def __listFromSQLConcept(cls, db_connection, sql, concept):
         cur=None
         
         try:
@@ -255,9 +252,9 @@ class Fijo:
     def findDateInf(cls, db_connection, date_min, is_mensual):
         # 'date' como string, en la forma 'YYYY-MM-DD'
         if is_mensual==True:
-            sql='SELECT * FROM %s mensual=1 AND WHERE date>="%s"' % (Fijo.tableName,date_max)
+            sql='SELECT * FROM %s mensual=1 AND WHERE date>="%s"' % (Fijo.tableName,date_min)
         else:
-            sql='SELECT * FROM %s mensual=0 AND WHERE date>="%s"' % (Fijo.tableName,date_max)
+            sql='SELECT * FROM %s mensual=0 AND WHERE date>="%s"' % (Fijo.tableName,date_min)
         
         return Fijo.__listFromSQL(db_connection,sql)
 
@@ -287,6 +284,10 @@ class Fijo:
             return '[%d] %-25s (%s; mensual) %.2f Eur' % (self.id, self.concept.name, self.date, self.value)
         else:
             return '[%d] %-25s (%s;   anual) %.2f Eur' % (self.id, self.concept.name, self.date, self.value)
+
+    def toList(self):
+#        return (self.id,  self.date, self.mensual, self.concept.name, '%8.2f' % self.value)
+        return (self.id,  self.date, self.mensual, self.concept.name, self.value)
 
 #
 #-- Clase que encapsula un elemento de la tabla 'concepts'
@@ -377,6 +378,9 @@ class Concept:
         
     def __str__(self):
         return '[%2d] %-25s, %s' % (self.id, self.name, self.description)
+    
+    def toList(self):
+        return (self.id, self.name, self.description)
     
 #
 #-- Clase que encapsula un elemento de la tabla 'groups'
@@ -470,6 +474,9 @@ class Group:
     
     def __str__(self):
         return '[%2d] %-15s, %s' % (self.id, self.name, self.description)
+    
+    def toList(self):
+        return (self.id, self.name, self.description)
     
 
 # =============================================================================
